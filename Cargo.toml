@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/oysters", "crates/oysters_core"]
+members = ["crates/oysters", "crates/oysters_cli", "crates/oysters_client", "crates/oysters_core"]
 package.authors = ["trisuaso"]
 
 [profile.dev]

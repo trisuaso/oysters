@@ -1,5 +1,5 @@
 test:
-    cargo run
+    cargo run --bin oysters
 
 clean-deps:
     cargo upgrade -i
@@ -8,3 +8,7 @@ clean-deps:
 fix:
     cargo fix --allow-dirty
     cargo clippy --fix --allow-dirty
+
+build:
+    cargo build --bin oysters -r
+    cargo build --bin oysters-cli -r

@@ -18,7 +18,7 @@ where
         item.1 = ResourceDescriptor::default();
     }
 
-    /// [`scan_sync`] backend.
+    /// [`Self::scan_sync`] backend.
     pub fn scan_with(map: &mut BTreeMap<K, Self::Item>) {
         let now = epoch_timestamp(EPOCH_YEAR);
         const MAXIMUM_AGE: usize = 604800000; // 7 days
@@ -39,7 +39,7 @@ where
         self.0 = clone;
     }
 
-    /// [`scan_sync`] but async.
+    /// [`Self::scan_sync`] but async.
     pub async fn scan(&mut self) {
         self.scan_sync();
     }

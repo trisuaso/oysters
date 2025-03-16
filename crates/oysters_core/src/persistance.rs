@@ -4,7 +4,7 @@ use pathbufd::PathBufD;
 use rusqlite::{Connection, Result};
 use std::{fs, sync::LazyLock};
 
-static PATH: LazyLock<PathBufD> = LazyLock::new(|| PathBufD::current().extend(&["dump.db"]));
+pub static PATH: LazyLock<PathBufD> = LazyLock::new(|| PathBufD::current().extend(&["dump.db"]));
 
 impl<K, V> Oyster<K, V>
 where

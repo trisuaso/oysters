@@ -121,7 +121,7 @@ where
         matches.collect()
     }
 
-    /// Selects either [`starting_with`] or [`ending_with`], depending on if the given
+    /// Selects either [`Self::starting_with`] or [`Self::ending_with`], depending on if the given
     /// pattern string ends with `*`, or begins with `*` (respectively).
     ///
     /// # Arguments
@@ -154,7 +154,7 @@ where
         matches.collect()
     }
 
-    /// Selects either [`starting_with_keys`] or [`ending_with_keys`], depending on if the given
+    /// Selects either [`Self::starting_with_keys`] or [`Self::ending_with_keys`], depending on if the given
     /// pattern string ends with `*`, or begins with `*` (respectively).
     ///
     /// # Arguments

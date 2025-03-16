@@ -1,0 +1,15 @@
+[package]
+name = "oysters_cli"
+version = "0.1.0"
+edition = "2024"
+authors.workspace = true
+
+[dependencies]
+clap = "4.5.32"
+oysters_client = { path = "../oysters_client" }
+tokio = { version = "1.44.0", features = ["macros", "rt-multi-thread"] }
+
+
+[[bin]]
+name = "oysters-cli"
+path = "./src/main.rs"

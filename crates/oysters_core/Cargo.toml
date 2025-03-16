@@ -1,8 +1,8 @@
 [package]
 name = "oysters_core"
-authors = { workspace = true }
 version = "0.1.0"
 edition = "2024"
+authors.workspace = true
 
 [features]
 lru = ["dep:chrono"]
