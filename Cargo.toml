@@ -1,0 +1,16 @@
+[workspace]
+resolver = "3"
+members = ["crates/oysters", "crates/oysters_core"]
+package.authors = ["trisuaso"]
+
+[profile.dev]
+incremental = true
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+# panic = "abort"
+panic = "unwind"
+strip = true
+incremental = true

@@ -1,0 +1,20 @@
+[package]
+name = "oysters"
+authors = { workspace = true }
+version = "0.1.0"
+edition = "2024"
+
+[features]
+lru = ["oysters_core/lru"]
+persistance = ["oysters_core/persistance", "oysters_core/bundled_sqlite"]
+default = ["lru", "persistance"]
+
+[dependencies]
+axum = { version = "0.8.1", features = ["macros"] }
+tokio = { version = "1.44.0", features = ["macros", "rt-multi-thread"] }
+oysters_core = { path = "../oysters_core", features = [
+    "serde",
+], default-features = false }
+serde = { version = "1.0.219", features = ["derive"] }
+toml = "0.8.20"
+pathbufd = "0.1.4"
