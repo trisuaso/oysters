@@ -4,10 +4,19 @@ After=network.target
 Wants=network-online.target
 
 [Service]
-Restart=always
 Type=simple
+TimeoutStartSec=0
+
 ExecStart=/usr/bin/oysters
 WorkingDirectory=/etc/oysters
+
+Restart=on-failure
+RestartSec=5s
+
+KillMode=process
+KillSignal=SIGTERM
+
+PIDFile=/run/oysters.pid
 
 [Install]
 WantedBy=multi-user.target
