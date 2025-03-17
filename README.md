@@ -48,3 +48,23 @@ a:b:d = 5
 > oysters-cli dump # dump the in-memory map into an SQLite file, allowing us to store data persistantly
 > oysters-cli scan # scan the in-memory map for keys accessed less than 7 days ago, allowing us to delete stale data
 ```
+
+### Cron jobs
+
+Here's a few example cron jobs to schedule important tasks.
+
+Scan and delete stale keys each day:
+
+```cron
+0 0 * * * oysters-cli scan
+```
+
+Dump into the SQLite file each day:
+
+```cron
+0 0 * * * oysters-cli dump
+```
+
+## Attribution
+
+You can view the license [here](./LICENSE).
