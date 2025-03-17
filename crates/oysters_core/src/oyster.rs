@@ -25,8 +25,6 @@ where
     K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
-    pub type Item = Pearl<V>;
-
     /// Create a new [`Oyster`].
     pub fn new() -> Self {
         Self(HashMap::default())
@@ -37,7 +35,7 @@ where
     /// # Arguments
     /// * `key` - the key to store the value in
     /// * `value` - the actual value
-    pub fn insert(&mut self, key: K, value: V) -> Option<Self::Item> {
+    pub fn insert(&mut self, key: K, value: V) -> Option<Pearl<V>> {
         self.0.insert(key, Pearl::new(value))
     }
 
@@ -45,8 +43,8 @@ where
     ///
     /// # Arguments
     /// * `key` - the key to store the value in
-    /// * `value` - the actual value (as [`Self::Item`])
-    pub fn insert_full(&mut self, key: K, value: Self::Item) -> Option<Self::Item> {
+    /// * `value` - the actual value (as [`Pearl<V>`])
+    pub fn insert_full(&mut self, key: K, value: Pearl<V>) -> Option<Pearl<V>> {
         self.0.insert(key, value)
     }
 
@@ -54,11 +52,8 @@ where
     ///
     /// # Arguments
     /// * `key` - the key to store the value in
-    pub fn incr(&mut self, key: K) -> Option<Self::Item> {
-        let value = self.get(&key)?
-        .to_string()
-        .parse::<usize>()
-        .unwrap();
+    pub fn incr(&mut self, key: K) -> Option<Pearl<V>> {
+        let value = self.get(&key)?.to_string().parse::<usize>().unwrap();
 
         self.insert(key, (value + 1).to_string().into())
     }
@@ -67,11 +62,8 @@ where
     ///
     /// # Arguments
     /// * `key` - the key to store the value in
-    pub fn decr(&mut self, key: K) -> Option<Self::Item> {
-        let mut value = self.get(&key)?
-        .to_string()
-        .parse::<usize>()
-        .unwrap();
+    pub fn decr(&mut self, key: K) -> Option<Pearl<V>> {
+        let mut value = self.get(&key)?.to_string().parse::<usize>().unwrap();
 
         if value == 0 {
             value += 1; // this will make the value just end up as 0
@@ -96,7 +88,7 @@ where
     ///
     /// # Arguments
     /// * `key` - the key the value is stored in
-    pub fn get_full(&self, key: &K) -> Option<&Self::Item> {
+    pub fn get_full(&self, key: &K) -> Option<&Pearl<V>> {
         self.0.get(key)
     }
 
@@ -104,7 +96,7 @@ where
     ///
     /// # Arguments
     /// * `prefix` - the prefix to match keys against
-    pub fn starting_with(&self, prefix: &str) -> Vec<(&K, &Self::Item)> {
+    pub fn starting_with(&self, prefix: &str) -> Vec<(&K, &Pearl<V>)> {
         let matches = self
             .0
             .iter()
@@ -117,7 +109,7 @@ where
     ///
     /// # Arguments
     /// * `suffix` - the suffix to match keys against
-    pub fn ending_with(&self, suffix: &str) -> Vec<(&K, &Self::Item)> {
+    pub fn ending_with(&self, suffix: &str) -> Vec<(&K, &Pearl<V>)> {
         let matches = self.0.iter().filter(|x| x.0.to_string().ends_with(suffix));
         matches.collect()
     }
@@ -127,7 +119,7 @@ where
     ///
     /// # Arguments
     /// * `pattern` - the pattern to match keys against
-    pub fn filter(&self, pattern: &str) -> Vec<(&K, &Self::Item)> {
+    pub fn filter(&self, pattern: &str) -> Vec<(&K, &Pearl<V>)> {
         let pat = &pattern.replace("*", "");
         if pattern.starts_with("*") {
             self.ending_with(pat)
@@ -173,7 +165,7 @@ where
     ///
     /// # Arguments
     /// * `key` - the key the value is stored in
-    pub fn remove(&mut self, key: &K) -> Option<Self::Item> {
+    pub fn remove(&mut self, key: &K) -> Option<Pearl<V>> {
         self.0.remove(key)
     }
 }

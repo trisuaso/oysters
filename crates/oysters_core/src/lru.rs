@@ -1,5 +1,5 @@
 use crate::oyster::Oyster;
-use crate::pearl::{EPOCH_YEAR, ResourceDescriptor};
+use crate::pearl::{EPOCH_YEAR, Pearl, ResourceDescriptor};
 use crate::time::epoch_timestamp;
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -20,7 +20,7 @@ where
     }
 
     /// [`Self::scan_sync`] backend.
-    pub fn scan_with(map: &mut HashMap<K, Self::Item>) {
+    pub fn scan_with(map: &mut HashMap<K, Pearl<V>>) {
         let now = epoch_timestamp(EPOCH_YEAR);
         const MAXIMUM_AGE: usize = 604800000; // 7 days
 
