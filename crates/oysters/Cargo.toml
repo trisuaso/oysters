@@ -1,7 +1,7 @@
 [package]
 name = "oysters"
 description = "Simple HTTP server for the Oysters LRU k/v store"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2024"
 authors.workspace = true
 license.workspace = true
@@ -15,7 +15,7 @@ default = ["lru", "persistance"]
 [dependencies]
 axum = { version = "0.8.1", features = ["macros"] }
 tokio = { version = "1.44.0", features = ["macros", "rt-multi-thread"] }
-oysters_core = { path = "../oysters_core", version = "0.1.1", features = [
+oysters_core = { path = "../oysters_core", version = "0.1.2", features = [
     "serde",
 ], default-features = false }
 serde = { version = "1.0.219", features = ["derive"] }

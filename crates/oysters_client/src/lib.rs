@@ -1,5 +1,5 @@
 use oysters_core::pearl::ResourceDescriptor;
-use reqwest;
+use reqwest::{self, StatusCode};
 
 #[derive(Clone)]
 pub struct Client {
@@ -34,12 +34,22 @@ impl Client {
         req.send().await.unwrap().text().await.unwrap()
     }
 
-    pub async fn insert(&self, key: &str, value: &str) -> String {
+    pub async fn insert(&self, key: &str, value: &str) -> bool {
         let req = self
             .client
             .post(self.build_url(key))
             .body(value.to_string());
-        req.send().await.unwrap().text().await.unwrap()
+        req.send().await.unwrap().status() == StatusCode::OK
+    }
+
+    pub async fn incr(&self, key: &str) -> bool {
+        let req = self.client.post(self.build_url(&format!("_incr/{key}")));
+        req.send().await.unwrap().status() == StatusCode::OK
+    }
+
+    pub async fn decr(&self, key: &str) -> bool {
+        let req = self.client.post(self.build_url(&format!("_decr/{key}")));
+        req.send().await.unwrap().status() == StatusCode::OK
     }
 
     pub async fn remove(&self, key: &str) -> String {

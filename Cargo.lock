@@ -991,7 +991,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
 name = "oysters"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "axum",
  "oysters_core",
@@ -1006,7 +1006,7 @@ dependencies = [
 
 [[package]]
 name = "oysters_cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "oysters_client",
@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "oysters_client"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "oysters_core",
  "reqwest",
@@ -1023,7 +1023,7 @@ dependencies = [
 
 [[package]]
 name = "oysters_core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "pathbufd",

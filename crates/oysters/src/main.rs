@@ -85,6 +85,22 @@ pub async fn insert_value(
     map.write().await.insert(key, value);
 }
 
+/// Increment a key.
+pub async fn incr_value(
+    Path(key): Path<String>,
+    Extension(map): Extension<MapState>,
+) -> impl IntoResponse {
+    map.write().await.incr(key);
+}
+
+/// Decrement a key.
+pub async fn decr_value(
+    Path(key): Path<String>,
+    Extension(map): Extension<MapState>,
+) -> impl IntoResponse {
+    map.write().await.decr(key);
+}
+
 /// Dump the map to a database.
 pub async fn dump(Extension(map): Extension<MapState>) -> impl IntoResponse {
     map.read().await.dump().unwrap();
@@ -121,6 +137,8 @@ async fn main() {
         .route("/_full/{key}", get(get_full_value))
         .route("/_filter", post(filter_all))
         .route("/_filter/keys", post(filter_keys))
+        .route("/_incr/{key}", post(incr_value))
+        .route("/_decr/{key}", post(decr_value))
         .route("/{key}", get(get_value))
         .route("/{key}", post(insert_value))
         .route("/{key}", delete(remove_value))

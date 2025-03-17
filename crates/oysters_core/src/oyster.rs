@@ -55,10 +55,7 @@ where
     /// # Arguments
     /// * `key` - the key to store the value in
     pub fn incr(&mut self, key: K) -> Option<Self::Item> {
-        let value = match self.get(&key) {
-            Some(v) => v,
-            None => return None,
-        }
+        let value = self.get(&key)?
         .to_string()
         .parse::<usize>()
         .unwrap();
@@ -71,13 +68,14 @@ where
     /// # Arguments
     /// * `key` - the key to store the value in
     pub fn decr(&mut self, key: K) -> Option<Self::Item> {
-        let value = match self.get(&key) {
-            Some(v) => v,
-            None => return None,
-        }
+        let mut value = self.get(&key)?
         .to_string()
         .parse::<usize>()
         .unwrap();
+
+        if value == 0 {
+            value += 1; // this will make the value just end up as 0
+        }
 
         self.insert(key, (value - 1).to_string().into())
     }

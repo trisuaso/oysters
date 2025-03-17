@@ -21,6 +21,16 @@ fn cli() -> Command {
                 .arg(arg!(<VALUE> "The value to insert")),
         )
         .subcommand(
+            Command::new("incr")
+                .about("Incremenet a key")
+                .arg(arg!(<KEY> "The key to increment")),
+        )
+        .subcommand(
+            Command::new("decr")
+                .about("Decrement a key")
+                .arg(arg!(<KEY> "The key to decrement")),
+        )
+        .subcommand(
             Command::new("remove")
                 .about("Remove a value from the map")
                 .arg(arg!(<KEY> "The key to remove")),
@@ -47,24 +57,32 @@ async fn main() {
         Some(("scan", _)) => client.scan().await,
         Some(("get", sub)) => println!(
             "{}",
-            client.get(&sub.get_one::<String>("KEY").unwrap()).await
+            client.get(sub.get_one::<String>("KEY").unwrap()).await
         ),
         Some(("insert", sub)) => println!(
             "{}",
             client
                 .insert(
-                    &sub.get_one::<String>("KEY").unwrap(),
-                    &sub.get_one::<String>("VALUE").unwrap()
+                    sub.get_one::<String>("KEY").unwrap(),
+                    sub.get_one::<String>("VALUE").unwrap()
                 )
                 .await
         ),
+        Some(("incr", sub)) => println!(
+            "{}",
+            client.incr(sub.get_one::<String>("KEY").unwrap()).await
+        ),
+        Some(("decr", sub)) => println!(
+            "{}",
+            client.decr(sub.get_one::<String>("KEY").unwrap()).await
+        ),
         Some(("remove", sub)) => println!(
             "{}",
-            client.remove(&sub.get_one::<String>("KEY").unwrap()).await
+            client.remove(sub.get_one::<String>("KEY").unwrap()).await
         ),
         Some(("filter", sub)) => {
             for (k, v) in client
-                .filter(&sub.get_one::<String>("PATTERN").unwrap())
+                .filter(sub.get_one::<String>("PATTERN").unwrap())
                 .await
             {
                 println!("{} = {}", k, v.0)
@@ -72,7 +90,7 @@ async fn main() {
         }
         Some(("filter_keys", sub)) => {
             for k in client
-                .filter_keys(&sub.get_one::<String>("PATTERN").unwrap())
+                .filter_keys(sub.get_one::<String>("PATTERN").unwrap())
                 .await
             {
                 println!("{k}")
