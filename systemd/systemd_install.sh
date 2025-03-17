@@ -8,5 +8,6 @@ sudo wget https://raw.githubusercontent.com/trisuaso/oysters/refs/heads/master/s
 sudo wget https://raw.githubusercontent.com/trisuaso/oysters/refs/heads/master/systemd/oysters-scan.service
 sudo wget https://raw.githubusercontent.com/trisuaso/oysters/refs/heads/master/systemd/oysters-scan.timer
 
+sudo systemctl daemon-reload
 sudo systemctl enable --now oysters
 echo "Oysters service enabled"
