@@ -1,7 +1,7 @@
 [package]
 name = "oysters"
 description = "Simple HTTP server for the Oysters LRU k/v store"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 authors.workspace = true
 license.workspace = true
@@ -9,8 +9,9 @@ repository.workspace = true
 
 [features]
 lru = ["oysters_core/lru"]
-persistance = ["oysters_core/persistance", "oysters_core/bundled_sqlite"]
-default = ["lru", "persistance"]
+persistance = ["oysters_core/persistance"]
+bundled_sqlite = ["oysters_core/bundled_sqlite"]
+default = ["lru", "persistance", "bundled_sqlite"]
 
 [dependencies]
 axum = { version = "0.8.1", features = ["macros"] }
