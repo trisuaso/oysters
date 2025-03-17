@@ -1,15 +1,18 @@
 use crate::pearl::Pearl;
-use std::collections::{BTreeMap, btree_map::IntoIter};
+use std::{
+    collections::{HashMap, hash_map::IntoIter},
+    hash::Hash,
+};
 
 #[derive(Debug)]
-pub struct Oyster<K, V>(pub(crate) BTreeMap<K, Pearl<V>>)
+pub struct Oyster<K, V>(pub(crate) HashMap<K, Pearl<V>>)
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>;
 
 impl<K, V> Default for Oyster<K, V>
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
     fn default() -> Self {
@@ -19,14 +22,14 @@ where
 
 impl<K, V> Oyster<K, V>
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
     pub type Item = Pearl<V>;
 
     /// Create a new [`Oyster`].
     pub fn new() -> Self {
-        Self(BTreeMap::default())
+        Self(HashMap::default())
     }
 
     /// Insert a value given its `key` and `value`.
@@ -179,7 +182,7 @@ where
 
 impl<K, V> IntoIterator for Oyster<K, V>
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
     type Item = (K, Pearl<V>);

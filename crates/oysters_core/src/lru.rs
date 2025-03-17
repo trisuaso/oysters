@@ -1,11 +1,12 @@
 use crate::oyster::Oyster;
 use crate::pearl::{EPOCH_YEAR, ResourceDescriptor};
 use crate::time::epoch_timestamp;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::hash::Hash;
 
 impl<K, V> Oyster<K, V>
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
     /// Update the resource descriptor of an item. This method assumes that the item
@@ -19,7 +20,7 @@ where
     }
 
     /// [`Self::scan_sync`] backend.
-    pub fn scan_with(map: &mut BTreeMap<K, Self::Item>) {
+    pub fn scan_with(map: &mut HashMap<K, Self::Item>) {
         let now = epoch_timestamp(EPOCH_YEAR);
         const MAXIMUM_AGE: usize = 604800000; // 7 days
 

@@ -18,3 +18,6 @@ oysters_core = { path = "../oysters_core", features = [
 serde = { version = "1.0.219", features = ["derive"] }
 toml = "0.8.20"
 pathbufd = "0.1.4"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tower-http = { version = "0.6.2", features = ["trace"] }

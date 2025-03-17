@@ -2,13 +2,14 @@ use crate::oyster::Oyster;
 use crate::pearl::{Pearl, ResourceDescriptor};
 use pathbufd::PathBufD;
 use rusqlite::{Connection, Result};
+use std::hash::Hash;
 use std::{fs, sync::LazyLock};
 
 pub static PATH: LazyLock<PathBufD> = LazyLock::new(|| PathBufD::current().extend(&["dump.db"]));
 
 impl<K, V> Oyster<K, V>
 where
-    K: Ord + Clone + Send + ToString + From<String>,
+    K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>,
 {
     /// Dump the cache into the dump file ([`PATH`]).

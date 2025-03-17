@@ -5,6 +5,8 @@ use axum::extract::Path;
 use axum::response::IntoResponse;
 use axum::routing::{delete, get, post};
 use axum::{Extension, Json, Router};
+use tower_http::trace::{self, TraceLayer};
+use tracing::{Level, info};
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -103,6 +105,11 @@ pub async fn remove_value(
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_target(false)
+        .compact()
+        .init();
+
     let mut map: Map = Oyster::new();
     map.restore().unwrap();
 
@@ -117,12 +124,18 @@ async fn main() {
         .route("/{key}", get(get_value))
         .route("/{key}", post(insert_value))
         .route("/{key}", delete(remove_value))
-        .layer(Extension(Arc::new(RwLock::new(map))));
+        .layer(Extension(Arc::new(RwLock::new(map))))
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
+                .on_response(trace::DefaultOnResponse::new().level(Level::INFO)),
+        );
 
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.port))
         .await
         .unwrap();
 
-    println!("listening on http://localhost:{}", config.port);
+    info!("🦪 OYSTERS");
+    info!("listening on http://localhost:{}", config.port);
     axum::serve(listener, app).await.unwrap();
 }
