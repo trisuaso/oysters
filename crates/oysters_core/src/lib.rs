@@ -1,4 +1,3 @@
-#![doc = include_str!("../../../README.md")]
 #![allow(incomplete_features)]
 #![feature(inherent_associated_types)]
 pub mod oyster;

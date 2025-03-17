@@ -1,8 +1,11 @@
 [package]
 name = "oysters_core"
+description = "Core for the Oysters LRU k/v store"
 version = "0.1.1"
 edition = "2024"
 authors.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [features]
 lru = ["dep:chrono"]
