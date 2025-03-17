@@ -1,0 +1,13 @@
+[Unit]
+Description=Oysters server
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/usr/bin/oysters
+WorkingDirectory=/etc/oysters
+
+[Install]
+WantedBy=multi-user.target

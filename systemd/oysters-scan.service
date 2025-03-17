@@ -1,0 +1,12 @@
+[Unit]
+Description=Oysters scan
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/usr/bin/oysters-cli scan
+
+[Install]
+WantedBy=multi-user.target

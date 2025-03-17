@@ -65,6 +65,8 @@ Dump into the SQLite file each day:
 0 0 * * * oysters-cli dump
 ```
 
+If you'd rather use systemd timers and services, you can view some examples [here](./systemd).
+
 ## Attribution
 
 You can view the license [here](./LICENSE).
