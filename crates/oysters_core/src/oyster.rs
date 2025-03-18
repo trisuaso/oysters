@@ -1,11 +1,19 @@
+use std::hash::Hash;
+
+#[cfg(feature = "sqlite_backend")]
+use std::marker::PhantomData;
+
+#[cfg(not(feature = "sqlite_backend"))]
 use crate::pearl::Pearl;
-use std::{
-    collections::{HashMap, hash_map::IntoIter},
-    hash::Hash,
-};
+#[cfg(not(feature = "sqlite_backend"))]
+use std::collections::{HashMap, hash_map::IntoIter};
 
 #[derive(Debug)]
-pub struct Oyster<K, V>(pub(crate) HashMap<K, Pearl<V>>)
+pub struct Oyster<K, V>(
+    #[cfg(not(feature = "sqlite_backend"))] pub(crate) HashMap<K, Pearl<V>>,
+    #[cfg(feature = "sqlite_backend")] pub(crate) PhantomData<K>,
+    #[cfg(feature = "sqlite_backend")] pub(crate) PhantomData<V>,
+)
 where
     K: Hash + Ord + Clone + Send + ToString + From<String>,
     V: Clone + Send + ToString + From<String>;
@@ -20,6 +28,7 @@ where
     }
 }
 
+#[cfg(not(feature = "sqlite_backend"))]
 impl<K, V> Oyster<K, V>
 where
     K: Hash + Ord + Clone + Send + ToString + From<String>,
@@ -36,7 +45,8 @@ where
     /// * `key` - the key to store the value in
     /// * `value` - the actual value
     pub fn insert(&mut self, key: K, value: V) -> Option<Pearl<V>> {
-        self.0.insert(key, Pearl::new(value))
+        let v = Pearl::new(value);
+        self.0.insert(key, v)
     }
 
     /// Insert a value given its `key` and `value`.
@@ -54,7 +64,6 @@ where
     /// * `key` - the key to store the value in
     pub fn incr(&mut self, key: K) -> Option<Pearl<V>> {
         let value = self.get(&key)?.to_string().parse::<usize>().unwrap();
-
         self.insert(key, (value + 1).to_string().into())
     }
 
@@ -134,7 +143,6 @@ where
     /// * `prefix` - the prefix to match keys against
     pub fn starting_with_keys(&self, prefix: &str) -> Vec<&K> {
         let matches = self.0.keys().filter(|x| x.to_string().starts_with(prefix));
-
         matches.collect()
     }
 
@@ -166,10 +174,14 @@ where
     /// # Arguments
     /// * `key` - the key the value is stored in
     pub fn remove(&mut self, key: &K) -> Option<Pearl<V>> {
+        #[cfg(feature = "persistance")]
+        self.remove_from_db(key).unwrap();
+
         self.0.remove(key)
     }
 }
 
+#[cfg(not(feature = "sqlite_backend"))]
 impl<K, V> IntoIterator for Oyster<K, V>
 where
     K: Hash + Ord + Clone + Send + ToString + From<String>,

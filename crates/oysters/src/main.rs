@@ -103,7 +103,11 @@ pub async fn decr_value(
 
 /// Dump the map to a database.
 pub async fn dump(Extension(map): Extension<MapState>) -> impl IntoResponse {
-    map.read().await.dump().unwrap();
+    tokio::task::spawn(async move {
+        map.read().await.dump().unwrap();
+    });
+
+    "Data dump in started"
 }
 
 /// Scan the map for old values and remove them.

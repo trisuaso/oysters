@@ -99,3 +99,23 @@ async fn main() {
         _ => unreachable!(),
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::Client;
+    use tokio::runtime::Runtime;
+
+    #[test]
+    fn big() {
+        let rt = Runtime::new().unwrap();
+        let client = Client::new("http://localhost:5072".to_string());
+
+        for i in 0..1_000_000 {
+            rt.block_on(
+                client
+                    .insert(&format!("tests:big:{i}"), &i.to_string())
+                    .into_future(),
+            );
+        }
+    }
+}

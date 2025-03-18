@@ -1,7 +1,7 @@
 [package]
 name = "oysters_cli"
 description = "Simple HTTP CLI for the Oysters LRU k/v store"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 authors.workspace = true
 license.workspace = true

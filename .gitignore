@@ -1,3 +1,5 @@
 /target
 .config/config.toml
-dump.db
+
+dump.db*
+staging.db*

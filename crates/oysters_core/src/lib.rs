@@ -1,6 +1,9 @@
 pub mod oyster;
 pub mod pearl;
 
+#[cfg(feature = "sqlite_backend")]
+pub mod sqlite_backend;
+
 #[cfg(feature = "lru")]
 mod time;
 
