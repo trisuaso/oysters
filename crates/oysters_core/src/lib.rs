@@ -1,4 +1,5 @@
 pub mod oyster;
+pub mod pagemap;
 pub mod pearl;
 
 #[cfg(feature = "sqlite_backend")]
