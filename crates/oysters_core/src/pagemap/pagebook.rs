@@ -1,6 +1,8 @@
+use lz4_flex::{compress_prepend_size as compress, decompress_size_prepended as decompress};
 use std::ops::Range;
+use std::ptr::{read as ptrread, write as ptrwrite};
 
-pub struct PageBook(pub Vec<Vec<u8>>, pub (usize, usize));
+pub struct PageBook(pub Vec<Vec<u8>>, pub (usize, usize, usize), (usize, usize));
 
 impl PageBook {
     /// Create a new [`PageBook`].
@@ -14,17 +16,34 @@ impl PageBook {
             pagebook.push(vec![0; size]);
         }
 
-        Self(pagebook, (count, size))
+        Self(pagebook, (count, size, 0), (0, 0))
+    }
+
+    /// Create a new page under self.
+    pub fn create_page(&mut self) -> Option<&Vec<u8>> {
+        self.0.insert(0, vec![0; self.1.1]); // insert page TO THE BEGINNING (so it is filled ASAP)
+        self.1.0 += 1; // incr page count
+        self.0.get(self.1.0 - 1)
+    }
+
+    /// Check if the window contains all null bytes.
+    pub(crate) fn check_window_for_not_null(window: &[u8]) -> bool {
+        let sub_1 = window.len() - 1;
+        let null = &0_u8;
+
+        let first_byte = window.get(0).unwrap() == null;
+        let last_byte = window.get(sub_1).unwrap() == null;
+        let middle_byte = window.get(sub_1 / 2).unwrap() == null;
+
+        first_byte && middle_byte && last_byte
     }
 
     /// Get the next free (\0) range of the given size in the given page.
     pub fn find_free_range(page: &[u8], size: usize) -> Option<Range<usize>> {
-        let windows = page.windows(size);
+        let mut windows = page.windows(size);
 
-        for (i, window) in windows.enumerate() {
-            if window == vec![0; size] {
-                return Some(i..i + size);
-            }
+        if let Some(i) = windows.position(|x| PageBook::check_window_for_not_null(x)) {
+            return Some(i..i + size);
         }
 
         None
@@ -41,6 +60,7 @@ impl PageBook {
     ///
     /// If the key doesn't exist in any page, `None` will be returned.
     pub fn find_page(&self, key: &[u8]) -> Option<(usize, usize)> {
+        let key = compress(key);
         for (i, page) in self.0.iter().enumerate() {
             let mut windows = page.windows(key.len()); // + 1 to include sep byte
             let mut window_num: usize = 0;
@@ -141,6 +161,8 @@ impl PageBook {
     /// * `page` - the page the key is contained in
     /// * `key` - the key as bytes
     pub fn get_known(&self, page: usize, key: &[u8]) -> Option<Vec<u8>> {
+        let key = &compress(key);
+
         // get page
         let page = match self.0.get(page) {
             Some(p) => p,
@@ -172,7 +194,7 @@ impl PageBook {
             out.push(byte.to_owned());
         }
 
-        Some(out)
+        Some(decompress(&out).unwrap())
     }
 
     /// Insert a value into the book at the **first available** location.
@@ -181,11 +203,15 @@ impl PageBook {
     /// * `key` - the key as bytes
     /// * `value` - the value as bytes
     pub fn insert(&mut self, key: &[u8], value: &[u8]) {
+        let key = &compress(key);
+        let value = &compress(value);
+
         // find good page
         let page: (usize, Option<Range<usize>>) = {
             let mut num: usize = 0;
             let mut range: Option<Range<usize>> = None;
-            for (i, page) in self.0.iter().enumerate() {
+
+            for (i, page) in self.0.iter().skip(self.2.0).enumerate() {
                 let free_range = PageBook::find_free_range(page, key.len() + value.len() + 2);
 
                 if free_range.is_none() {
@@ -197,6 +223,18 @@ impl PageBook {
                 range = free_range;
             }
 
+            self.2.0 = num; // store the last page we had to check as the skip value
+
+            if range.is_none() {
+                if self.create_page().is_some() {
+                    // immediately set range to 0..(minimum needed)
+                    // we're skipping `find_free_range` here because that will actually
+                    // spend resources looking for the value, meanwhile we know the page
+                    // is empty
+                    range = Some(0..(key.len() + value.len() + 2));
+                }
+            }
+
             (num, range)
         };
 
@@ -205,25 +243,21 @@ impl PageBook {
         let page = self.0.get_mut(page.0).unwrap();
 
         // push data
-        let mut out: Vec<u8> = Vec::new();
-        for byte in key {
-            out.push(byte.to_owned());
-        }
-
-        out.push(1_u8);
-
-        for byte in value {
-            out.push(byte.to_owned());
-        }
-
-        out.push(2_u8);
+        let out: Vec<u8> = [key.as_slice(), &[1_u8], value.as_slice(), &[2_u8]].concat();
 
         // swap data
         let mut idx: usize = 0;
         for i in free_range {
-            page.insert(i, out.get(idx).unwrap().to_owned());
+            unsafe {
+                let mut b = *out.get_unchecked(idx);
+                ptrwrite(&mut page[i], ptrread(&mut b));
+            }
+
             idx += 1;
         }
+
+        // incr key count
+        self.1.2 += 1;
     }
 
     /// Remove a value from the pagebook (assuming we **don't** know the page number).
@@ -264,6 +298,9 @@ impl PageBook {
             page.remove(i - removed_bytes); // subtract the number of bytes we've already removed to account for changing len
             removed_bytes += 1;
         }
+
+        // decr key count
+        self.1.2 -= 1;
 
         // return
         Some(())

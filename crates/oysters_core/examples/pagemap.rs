@@ -4,8 +4,8 @@ use oysters_core::*;
 fn main() {
     let mut book: pagemap::PageMap<String, String> =
         pagemap::PageMap::new(pagemap::PageMapOptions {
-            pages: 4,
-            page_size: 24,
+            pages: 1,
+            page_size: 64,
         });
 
     book.pagebook.insert(b"test", b"Hello, world!");
