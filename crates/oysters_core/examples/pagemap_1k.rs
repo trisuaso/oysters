@@ -8,13 +8,20 @@ fn main() {
             page_size: 16_000,
         });
 
-    for i in 0..1_000_i32 {
+    for i in 0..1 {
         let string = i.to_string();
-        let bytes = string.as_bytes();
-        book.pagebook.insert(bytes, bytes);
+        book.insert(string.to_string(), string);
     }
+    book.insert("2".to_string(), "Hello, world!".to_string());
 
     // verify that we actually inserted everything by checking a random number
-    let v = book.pagebook.get(&[53, 49, 52]);
-    dbg!(&String::from_utf8(v.unwrap()));
+    // let v = book.get(&"514".to_string());
+    // dbg!(&v);
+
+    // book.remove(&"514".to_string());
+
+    let v = book.get(&"514".to_string());
+    dbg!(&v);
+
+    book.dump(pathbufd::PathBufD::current().extend(&["page_dump"]));
 }

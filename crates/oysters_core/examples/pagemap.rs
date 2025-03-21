@@ -23,4 +23,6 @@ fn main() {
     book.pagebook.insert(b"test2", b"Hello, world! 2");
     let v = book.pagebook.get_full(b"test2").unwrap();
     dbg!(v.0, &String::from_utf8(v.1));
+
+    book.dump(pathbufd::PathBufD::current().extend(&["page_dump"]));
 }
