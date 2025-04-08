@@ -16,7 +16,7 @@ default = ["lru", "persistance", "bundled_sqlite"]
 
 [dependencies]
 axum = { version = "0.8.1", features = ["macros"] }
-tokio = { version = "1.44.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.44.2", features = ["macros", "rt-multi-thread"] }
 oysters_core = { path = "../oysters_core", version = "0.1.4", features = [
     "serde",
 ], default-features = false }
